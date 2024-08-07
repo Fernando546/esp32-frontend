@@ -5,7 +5,6 @@ import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { ChartData, ChartOptions } from 'chart.js';
 
-// Rejestracja komponentów wykresu
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 interface IData {
@@ -33,9 +32,8 @@ export default function HomePage() {
         const result = await res.json();
         console.log('Data fetched:', result);
         setLatestData(result.latestData);
-        setPast48Results(result.past48Results.reverse()); // Reverse to display from oldest to newest
+        setPast48Results(result.past48Results.reverse());
 
-        // Calculate the time since the last measurement
         if (result.latestData) {
           const now = new Date();
           const lastMeasurementTime = new Date(result.latestData.createdAt);
@@ -49,7 +47,7 @@ export default function HomePage() {
     }
 
     fetchData();
-    const interval = setInterval(fetchData, 600000); // 10 minutes
+    const interval = setInterval(fetchData, 600000);
     return () => clearInterval(interval);
   }, []);
 
@@ -90,10 +88,18 @@ export default function HomePage() {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
+      x: {
+        ticks: {
+          color: '#94a3b8', // Kolor godzin na osi X
+        },
+      },
       y: {
         type: 'linear' as const,
         display: true,
         position: 'left' as const,
+        ticks: {
+          color: '#94a3b8', // Kolor wartości na osi Y
+        },
       },
       y1: {
         type: 'linear' as const,
@@ -102,9 +108,17 @@ export default function HomePage() {
         grid: {
           drawOnChartArea: false,
         },
+        ticks: {
+          color: '#94a3b8', // Kolor wartości na osi Y1
+        },
       },
     },
     plugins: {
+      legend: {
+        labels: {
+          color: '#94a3b8', // Kolor etykiet legendy
+        },
+      },
       tooltip: {
         callbacks: {
           label: function (tooltipItem) {
