@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { ChartData, ChartOptions } from 'chart.js';
 
+// Rejestracja komponentów wykresu
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 interface IData {
@@ -18,6 +20,7 @@ export default function HomePage() {
   const [latestData, setLatestData] = useState<IData | null>(null);
   const [past48Results, setPast48Results] = useState<IData[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [minutesAgo, setMinutesAgo] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -31,6 +34,14 @@ export default function HomePage() {
         console.log('Data fetched:', result);
         setLatestData(result.latestData);
         setPast48Results(result.past48Results.reverse()); // Reverse to display from oldest to newest
+
+        // Calculate the time since the last measurement
+        if (result.latestData) {
+          const now = new Date();
+          const lastMeasurementTime = new Date(result.latestData.createdAt);
+          const diffInMinutes = Math.floor((now.getTime() - lastMeasurementTime.getTime()) / (1000 * 60));
+          setMinutesAgo(diffInMinutes + ' minut temu');
+        }
       } catch (err: any) {
         console.error('Failed to fetch data:', err);
         setError('Failed to fetch data');
@@ -38,15 +49,18 @@ export default function HomePage() {
     }
 
     fetchData();
-    const interval = setInterval(fetchData, 10000);
+    const interval = setInterval(fetchData, 600000); // 10 minutes
     return () => clearInterval(interval);
   }, []);
 
   if (error) return <div>{error}</div>;
   if (!latestData || !past48Results.length) return <div>Loading...</div>;
 
-  const chartData = {
-    labels: past48Results.map(d => new Date(d.createdAt).toLocaleTimeString()),
+  const chartData: ChartData<'line'> = {
+    labels: past48Results.map(d => {
+      const date = new Date(d.createdAt);
+      return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    }),
     datasets: [
       {
         label: 'Temperature (°C)',
@@ -65,7 +79,7 @@ export default function HomePage() {
     ],
   };
 
-  const options = {
+  const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
@@ -83,14 +97,33 @@ export default function HomePage() {
         },
       },
     },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (tooltipItem) {
+            return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
+          },
+        },
+      },
+    },
   };
 
   return (
     <div className='flex h-screen w-full flex-col justify-center items-center bg-gradient-to-br from-slate-900 to-indigo-900'>
       <div className='flex justify-center items-center flex-col text-white'>
         <h1 className='text-5xl p-10 text-center font-bold'>Temperatura i wilgotność w pokoju</h1>
-        <p className='font-semibold pb-5 text-lg'>Temperatura: {latestData.temperature}°C</p>
-        <p className='font-semibold text-lg'>Wilgotność: {latestData.humidity}%</p>
+        <p className='font-semibold pb-5 text-lg'>
+          <span className='text-white'>Temperatura:</span> 
+          <span style={{ color: 'rgba(75, 192, 192, 1)' }}> {latestData?.temperature}°C</span>
+        </p>
+        <p className='font-semibold pb-5 text-lg'>
+          <span className='text-white'>Wilgotność:</span> 
+          <span style={{ color: 'rgba(153, 102, 255, 1)' }}> {latestData?.humidity}%</span>
+        </p>
+        <p className='font-semibold text-lg'>
+          <span className='text-white'>Ostatni pomiar: </span>
+          <span className='text-slate-400'>{minutesAgo}</span>
+        </p>
         <div className='w-full max-w-4xl p-5'>
           <Line data={chartData} options={options} />
         </div>
