@@ -18,7 +18,7 @@ export default function HomePage() {
       try {
         console.log('Fetching data...');
         const res = await fetch('/api/data', {
-          cache: 'no-store', 
+          cache: 'no-store',
         });
         if (!res.ok) throw new Error('Network response was not ok');
         const result = await res.json();
@@ -31,7 +31,7 @@ export default function HomePage() {
     }
 
     fetchData();
-    const interval = setInterval(fetchData, 10000); 
+    const interval = setInterval(fetchData, 10000);
     return () => clearInterval(interval);
   }, []);
 
