@@ -1,6 +1,8 @@
 import connectToDatabase from '../../../lib/mongodb';
 import Data from '../../../models/Data';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   await connectToDatabase();
 
@@ -10,7 +12,9 @@ export async function GET() {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-store, max-age=0',
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
       },
     });
   } catch (error) {

@@ -7,6 +7,8 @@ interface IData {
   humidity: number;
 }
 
+export const dynamic = 'force-dynamic';
+
 export default function HomePage() {
   const [data, setData] = useState<IData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -14,17 +16,22 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch('/api/data');
+        console.log('Fetching data...');
+        const res = await fetch('/api/data', {
+          cache: 'no-store', 
+        });
         if (!res.ok) throw new Error('Network response was not ok');
         const result = await res.json();
+        console.log('Data fetched:', result);
         setData(result[0]);
       } catch (err: any) {
+        console.error('Failed to fetch data:', err);
         setError('Failed to fetch data');
       }
     }
 
     fetchData();
-    const interval = setInterval(fetchData, 10000); // Odświeżanie co 10 sekund
+    const interval = setInterval(fetchData, 10000); 
     return () => clearInterval(interval);
   }, []);
 
