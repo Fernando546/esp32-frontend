@@ -54,7 +54,14 @@ export default function HomePage() {
   }, []);
 
   if (error) return <div>{error}</div>;
-  if (!latestData || !past48Results.length) return <div>Loading...</div>;
+  if (!latestData || !past48Results.length) {
+    return (
+      <div className='flex h-screen w-full flex-col justify-center items-center bg-gradient-to-br from-slate-900 to-indigo-900'>
+        <div className='loader'></div>
+        <p className='text-white text-lg mt-4 font-bold'>Wczytywanie, proszę czekać...</p>
+      </div>
+    );
+  }
 
   const chartData: ChartData<'line'> = {
     labels: past48Results.map(d => {
