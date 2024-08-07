@@ -8,7 +8,10 @@ export async function GET() {
     const data = await Data.find().sort({ createdAt: -1 }).limit(1);
     return new Response(JSON.stringify(data), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store, max-age=0',
+      },
     });
   } catch (error) {
     return new Response(JSON.stringify({ error: 'Failed to fetch data' }), {

@@ -3,6 +3,12 @@ import mongoose from 'mongoose';
 const DataSchema = new mongoose.Schema({
   temperature: Number,
   humidity: Number,
-}, { timestamps: true });
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
-export default mongoose.models.Data || mongoose.model('Data', DataSchema);
+const Data = mongoose.models.Data || mongoose.model('Data', DataSchema);
+
+export default Data;

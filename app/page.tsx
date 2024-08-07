@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useEffect, useState } from 'react';
 
@@ -7,7 +7,7 @@ interface IData {
   humidity: number;
 }
 
-export default function Home() {
+export default function HomePage() {
   const [data, setData] = useState<IData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,6 +24,8 @@ export default function Home() {
     }
 
     fetchData();
+    const interval = setInterval(fetchData, 10000); // Odświeżanie co 10 sekund
+    return () => clearInterval(interval);
   }, []);
 
   if (error) return <div>{error}</div>;
