@@ -150,7 +150,10 @@ export default function HomePage() {
         </div>
       </div>
       <div className='fixed bottom-0 w-full flex justify-center'>
-        <p className='p-5 text-white text-xs md:text-sm text-center'>Aplikacja wykonana z miłością przez Fernanda</p>
+        <p className='p-5 text-white text-xs md:text-sm text-center'>
+          Aplikacja wykonana z miłością przez Fernanda.
+          <a href="https://github.com/Fernando546" className='text-indigo-300 font-bold' target='_blank' rel='noopener noreferrer'> GitHub</a>
+        </p>
       </div>
     </div>
   );
