@@ -38,7 +38,7 @@ export default function HomePage() {
           const now = new Date();
           const lastMeasurementTime = new Date(result.latestData.createdAt);
           const diffInMinutes = Math.floor((now.getTime() - lastMeasurementTime.getTime()) / (1000 * 60));
-          setMinutesAgo(diffInMinutes + ' minut temu');
+          setMinutesAgo(diffInMinutes + 'min temu');
         }
       } catch (err: any) {
         console.error('Failed to fetch data:', err);
