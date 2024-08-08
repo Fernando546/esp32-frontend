@@ -4,7 +4,6 @@ const urlsToCache = [
   '/manifest.json',
   '/icon-192x192.png',
   '/icon-512x512.png',
-  // Dodaj inne zasoby, które chcesz cache'ować
 ];
 
 self.addEventListener('install', (event) => {
