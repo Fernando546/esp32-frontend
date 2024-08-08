@@ -132,7 +132,7 @@ export default function HomePage() {
   return (
     <div className='flex h-screen w-full flex-col justify-center items-center bg-gradient-to-br from-slate-900 to-indigo-900'>
       <div className='flex justify-center items-center flex-col text-white'>
-        <h1 className='text-5xl p-10 text-center font-bold'>Temperatura i wilgotność w pokoju</h1>
+        <h1 className='text-5xl p-10 text-center font-bold'>Temperatura i wilgotność w pomieszczeniu</h1>
         <p className='font-semibold pb-5 text-lg'>
           <span className='text-white'>Temperatura:</span> 
           <span style={{ color: 'rgba(75, 192, 192, 1)' }}> {latestData?.temperature}°C</span>
