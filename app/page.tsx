@@ -51,6 +51,41 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    async function setupPushNotifications() {
+      if ('Notification' in window && 'serviceWorker' in navigator) {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          console.log('Notification permission granted.');
+          const registration = await navigator.serviceWorker.ready;
+          const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+          
+          if (!vapidPublicKey) {
+            throw new Error('VAPID Public Key is missing');
+          }
+  
+          const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+          });
+          
+          await fetch('/api/subscribe', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(subscription),
+          });
+        } else {
+          console.log('Notification permission denied.');
+        }
+      }
+    }
+  
+    setupPushNotifications();
+  }, []);
+  
+
   if (error) return <div>{error}</div>;
   if (!latestData || !past48Results.length) {
     return (
@@ -157,4 +192,23 @@ export default function HomePage() {
       </div>
     </div>
   );
+}
+
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  if (!base64String) {
+    throw new Error('Base64 string is undefined or empty');
+  }
+
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
 }
