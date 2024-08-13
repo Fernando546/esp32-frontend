@@ -20,6 +20,7 @@ export default function HomePage() {
   const [past48Results, setPast48Results] = useState<IData[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [minutesAgo, setMinutesAgo] = useState<string | null>(null);
+  const [theme, setTheme] = useState<'night' | 'hacker' | 'darkness' | 'powder'>('night');
 
   useEffect(() => {
     async function fetchData() {
@@ -84,17 +85,65 @@ export default function HomePage() {
   
     setupPushNotifications();
   }, []);
-  
 
-  if (error) return <div>{error}</div>;
-  if (!latestData || !past48Results.length) {
-    return (
-      <div className='flex h-screen w-full flex-col justify-center items-center bg-gradient-to-br from-slate-900 to-indigo-900'>
-        <div className='loader'></div>
-        <p className='text-white text-lg mt-4 font-bold'>Wczytywanie, proszę czekać...</p>
-      </div>
-    );
-  }
+  const themeStyles = {
+    night: {
+      background: 'bg-gradient-to-br from-slate-900 to-indigo-900',
+      text: 'text-white',
+      time: 'text-slate-400',
+      button: 'text-white',
+      buttonBg: 'bg-indigo-700',
+      chart: {
+        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColorHumidity: 'rgba(153, 102, 255, 1)',
+        backgroundColorHumidity: 'rgba(153, 102, 255, 0.2)',
+        axisColor: '#94a3b8',
+      }
+    },
+    hacker: {
+      background: 'bg-black',
+      text: 'text-[#0f0]',
+      time: 'text-[#0f0]',
+      button: 'text-black',
+      buttonBg: 'bg-[#0f0]',
+      chart: {
+        borderColor: 'rgba(0, 255, 0, 1)',
+        backgroundColor: 'rgba(0, 255, 0, 0.2)',
+        borderColorHumidity: 'rgba(0, 255, 0, 1)',
+        backgroundColorHumidity: 'rgba(0, 255, 0, 0.2)',
+        axisColor: '#0f0',
+      }
+    },
+    darkness: {
+      background: 'bg-gradient-to-r from-slate-900 to-slate-700',
+      text: 'text-white',
+      time: 'text-gray-400',
+      button: 'text-white',
+      buttonBg: 'bg-[#1f2937]',
+      chart: {
+        borderColor: 'rgba(222, 222, 222, 1)',
+        backgroundColor: 'rgba(222, 222, 222, 0.2)',
+        borderColorHumidity: 'rgba(130, 130, 130, 1)',
+        backgroundColorHumidity: 'rgba(130, 130, 130, 0.2)',
+        axisColor: '#ccc',
+      }
+    },
+    powder: {
+      background: 'bg-gradient-to-r from-violet-200 to-pink-200',
+      text: 'text-pink-500',
+      time: 'text-natural-400',
+      button: 'text-pink-500',
+      buttonBg: 'b-whiteg',
+      chart: {
+        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColorHumidity: 'rgba(54, 162, 235, 1)',
+        backgroundColorHumidity: 'rgba(54, 162, 235, 0.2)',
+        axisColor: '#1db4ec',
+      }
+    }
+  };
 
   const chartData: ChartData<'line'> = {
     labels: past48Results.map(d => {
@@ -105,15 +154,15 @@ export default function HomePage() {
       {
         label: 'Temperature (°C)',
         data: past48Results.map(d => d.temperature),
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: themeStyles[theme].chart.borderColor,
+        backgroundColor: themeStyles[theme].chart.backgroundColor,
         yAxisID: 'y',
       },
       {
         label: 'Humidity (%)',
         data: past48Results.map(d => d.humidity),
-        borderColor: 'rgba(153, 102, 255, 1)',
-        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+        borderColor: themeStyles[theme].chart.borderColorHumidity,
+        backgroundColor: themeStyles[theme].chart.backgroundColorHumidity,
         yAxisID: 'y1',
       },
     ],
@@ -125,7 +174,7 @@ export default function HomePage() {
     scales: {
       x: {
         ticks: {
-          color: '#94a3b8', // Kolor godzin na osi X
+          color: themeStyles[theme].chart.axisColor, // Color for X-axis labels
         },
       },
       y: {
@@ -133,7 +182,7 @@ export default function HomePage() {
         display: true,
         position: 'left' as const,
         ticks: {
-          color: '#94a3b8', // Kolor wartości na osi Y
+          color: themeStyles[theme].chart.axisColor, // Color for Y-axis labels
         },
       },
       y1: {
@@ -144,14 +193,14 @@ export default function HomePage() {
           drawOnChartArea: false,
         },
         ticks: {
-          color: '#94a3b8', // Kolor wartości na osi Y1
+          color: themeStyles[theme].chart.axisColor, // Color for Y1-axis labels
         },
       },
     },
     plugins: {
       legend: {
         labels: {
-          color: '#94a3b8', // Kolor etykiet legendy
+          color: themeStyles[theme].chart.axisColor, // Color for legend labels
         },
       },
       tooltip: {
@@ -164,30 +213,54 @@ export default function HomePage() {
     },
   };
 
+  const handleThemeChange = () => {
+    setTheme(prevTheme => {
+      if (prevTheme === 'night') return 'hacker';
+      if (prevTheme === 'hacker') return 'darkness';
+      if (prevTheme === 'darkness') return 'powder';
+      return 'night'; 
+    });
+  };
+
+  if (error) return <div>{error}</div>;
+  if (!latestData || !past48Results.length) {
+    return (
+      <div className={`flex h-screen w-full flex-col justify-center items-center ${themeStyles[theme].background}`}>
+        <div className='loader'></div>
+        <p className={`${themeStyles[theme].text} text-lg mt-4 font-bold`}>Wczytywanie, proszę czekać...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className='flex h-[100dvh] w-full flex-col justify-center items-center bg-gradient-to-br from-slate-900 to-indigo-900 overflow-hidden'>
-      <div className='flex justify-center items-center flex-col text-white'>
-        <h1 className='text-4xl md:text-5xl p-10 text-center font-bold'>Temperatura i wilgotność w pomieszczeniu</h1>
-        <p className='font-semibold pb-5 text-lg'>
-          <span className='text-white'>Temperatura:</span> 
-          <span style={{ color: 'rgba(75, 192, 192, 1)' }}> {latestData?.temperature}°C</span>
+    <div className={`flex h-[100dvh] w-full flex-col justify-center items-center ${themeStyles[theme].background} overflow-hidden`}>
+      <div className='fixed top-0 right-0 m-5'>
+          <button onClick={handleThemeChange} className={`text-sm font-bold py-2 px-3 bg-white rounded-md ${themeStyles[theme].button} ${themeStyles[theme].buttonBg} mb-4`}>
+            {theme === 'night' ? 'Motyw: Noc' : theme === 'hacker' ? 'Motyw: Haker' : theme === 'darkness' ? 'Motyw: Ciemny' : 'Motyw: Cukrowy'}
+          </button>
+        </div>
+      <div className='flex justify-center items-center flex-col'>
+        <h1 className={`text-4xl md:text-5xl p-10 text-center font-bold ${themeStyles[theme].text}`}>Temperatura i wilgotność w pomieszczeniu</h1>
+        <p className={`font-semibold pb-5 text-lg ${themeStyles[theme].text}`}>
+          <span className={`${themeStyles[theme].text}`}>Temperatura:</span> 
+          <span style={{ color: themeStyles[theme].chart.borderColor }}> {latestData?.temperature}°C</span>
         </p>
-        <p className='font-semibold pb-5 text-lg'>
-          <span className='text-white'>Wilgotność:</span> 
-          <span style={{ color: 'rgba(153, 102, 255, 1)' }}> {latestData?.humidity}%</span>
+        <p className={`font-semibold pb-5 text-lg ${themeStyles[theme].text}`}>
+          <span className={`${themeStyles[theme].text}`}>Wilgotność:</span> 
+          <span style={{ color: themeStyles[theme].chart.borderColorHumidity }}> {latestData?.humidity}%</span>
         </p>
-        <p className='font-semibold text-lg'>
-          <span className='text-white'>Ostatni pomiar: </span>
-          <span className='text-slate-400'>{minutesAgo}</span>
+        <p className={`font-semibold text-lg ${themeStyles[theme].text}`}>
+          <span className={`${themeStyles[theme].text}`}>Ostatni pomiar: </span>
+          <span className={`${themeStyles[theme].time}`}>{minutesAgo}</span>
         </p>
         <div className='w-full max-w-4xl p-5'>
           <Line data={chartData} options={options} />
         </div>
       </div>
       <div className='fixed bottom-0 w-full flex justify-center'>
-        <p className='p-5 text-white text-xs md:text-sm text-center'>
+        <p className={`p-5 text-xs md:text-sm text-center ${themeStyles[theme].text}`}>
           Aplikacja wykonana z miłością przez Fernanda.
-          <a href="https://github.com/Fernando546" className='text-indigo-300 font-bold' target='_blank' rel='noopener noreferrer'> GitHub</a>
+          <a href="https://github.com/Fernando546" className='font-bold' target='_blank' rel='noopener noreferrer'> GitHub</a>
         </p>
       </div>
     </div>
