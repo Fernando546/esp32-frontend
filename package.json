@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "chart.js": "^4.4.3",
+    "classnames": "^2.5.1",
     "mongoose": "^8.5.2",
     "next": "14.2.5",
     "react": "^18",

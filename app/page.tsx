@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { ChartData, ChartOptions } from 'chart.js';
+import classNames from 'classnames';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -134,7 +135,7 @@ export default function HomePage() {
       text: 'text-pink-500',
       time: 'text-natural-400',
       button: 'text-pink-500',
-      buttonBg: 'bg-[000000]',
+      buttonBg: 'bg-white',
       chart: {
         borderColor: 'rgba(255, 99, 132, 1)',
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -222,6 +223,12 @@ export default function HomePage() {
     });
   };
 
+  const buttonClass = classNames(
+    'text-sm font-bold py-2 px-3 rounded-md mb-4',
+    themeStyles[theme].button,
+    themeStyles[theme].buttonBg
+  );
+
   if (error) return <div>{error}</div>;
   if (!latestData || !past48Results.length) {
     return (
@@ -235,10 +242,13 @@ export default function HomePage() {
   return (
     <div className={`flex h-[100dvh] w-full flex-col justify-center items-center ${themeStyles[theme].background} overflow-hidden`}>
       <div className='fixed top-0 right-0 m-5'>
-          <button onClick={handleThemeChange} className={`text-sm font-bold py-2 px-3 bg-white rounded-md ${themeStyles[theme].button} ${themeStyles[theme].buttonBg} mb-4`}>
-            {theme === 'night' ? 'Motyw: Noc' : theme === 'hacker' ? 'Motyw: Haker' : theme === 'darkness' ? 'Motyw: Ciemny' : 'Motyw: Cukrowy'}
-          </button>
-        </div>
+        <button
+          onClick={handleThemeChange}
+          className={buttonClass}
+        >
+          {theme === 'night' ? 'Motyw: Noc' : theme === 'hacker' ? 'Motyw: Haker' : theme === 'darkness' ? 'Motyw: Ciemny' : 'Motyw: Cukrowy'}
+        </button>
+      </div>
       <div className='flex justify-center items-center flex-col'>
         <h1 className={`text-4xl md:text-5xl p-10 text-center font-bold ${themeStyles[theme].text}`}>Temperatura i wilgotność w pomieszczeniu</h1>
         <p className={`font-semibold pb-5 text-lg ${themeStyles[theme].text}`}>
