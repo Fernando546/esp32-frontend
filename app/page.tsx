@@ -92,7 +92,7 @@ export default function HomePage() {
       text: 'text-white',
       time: 'text-slate-400',
       button: 'text-white',
-      buttonBg: 'bg-indigo-700',
+      buttonBg: 'bg-indigo-800',
       chart: {
         borderColor: 'rgba(75, 192, 192, 1)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -106,7 +106,7 @@ export default function HomePage() {
       text: 'text-[#0f0]',
       time: 'text-[#0f0]',
       button: 'text-black',
-      buttonBg: 'bg-[#0f0]',
+      buttonBg: 'bg-[#00ff00]',
       chart: {
         borderColor: 'rgba(0, 255, 0, 1)',
         backgroundColor: 'rgba(0, 255, 0, 0.2)',
@@ -120,7 +120,7 @@ export default function HomePage() {
       text: 'text-white',
       time: 'text-gray-400',
       button: 'text-white',
-      buttonBg: 'bg-[#1f2937]',
+      buttonBg: 'bg-gray-600',
       chart: {
         borderColor: 'rgba(222, 222, 222, 1)',
         backgroundColor: 'rgba(222, 222, 222, 0.2)',
@@ -134,7 +134,7 @@ export default function HomePage() {
       text: 'text-pink-500',
       time: 'text-natural-400',
       button: 'text-pink-500',
-      buttonBg: 'b-whiteg',
+      buttonBg: 'bg-[000000]',
       chart: {
         borderColor: 'rgba(255, 99, 132, 1)',
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
