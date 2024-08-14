@@ -246,7 +246,7 @@ export default function HomePage() {
           onClick={handleThemeChange}
           className={buttonClass}
         >
-          {theme === 'night' ? 'Motyw: Noc' : theme === 'hacker' ? 'Motyw: Haker' : theme === 'darkness' ? 'Motyw: Ciemny' : 'Motyw: Cukrowy'}
+          {theme === 'night' ? 'Motyw: Noc' : theme === 'hacker' ? 'Motyw: Haker' : theme === 'darkness' ? 'Motyw: Mglisty' : 'Motyw: Cukrowy'}
         </button>
       </div>
       <div className='flex justify-center items-center flex-col'>
