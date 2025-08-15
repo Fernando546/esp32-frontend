@@ -164,29 +164,74 @@ export default function HomePage() {
     return arr.slice(-samplesNeeded);
   }, [pastResults, timeframe]);
 
+  // Labels use raw timestamps; formatting handled in tick callback for better control
   const chartData: ChartData<'line'> = {
-    labels: filteredData.map(d => {
-      const date = new Date(d.createdAt);
-      return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-    }),
+    labels: filteredData.map(d => d.createdAt),
     datasets: [
   { label: 'Temperatura (°C)', data: filteredData.map(d => d.temperature), borderColor: themeStyles.chart.borderColor, backgroundColor: themeStyles.chart.backgroundColor, fill: true, tension: 0.35, pointRadius: 0, yAxisID: 'y' },
   { label: 'Wilgotność (%)', data: filteredData.map(d => d.humidity), borderColor: themeStyles.chart.borderColorHumidity, backgroundColor: themeStyles.chart.backgroundColorHumidity, fill: true, tension: 0.35, pointRadius: 0, yAxisID: 'y1' },
     ],
   };
 
-  const options: ChartOptions<'line'> = {
+  const options: ChartOptions<'line'> = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
     scales: {
-      x: { ticks: { color: themeStyles.chart.axisColor }, grid: { color: 'rgba(128,128,128,0.15)' } },
+      x: {
+        ticks: {
+          color: themeStyles.chart.axisColor,
+          // Slight rotation for readability on shorter ranges
+          maxRotation: (timeframe === '6h' || timeframe === '24h') ? 50 : 0,
+          minRotation: (timeframe === '6h' || timeframe === '24h') ? 30 : 0,
+          autoSkip: !(timeframe === '1w' || timeframe === '1m'), // don't autoskip for longer ranges; we manually filter
+          callback: function(value, index) {
+            const i = index as number;
+            const entry = filteredData[i];
+            if (!entry) return '';
+            const d = new Date(entry.createdAt);
+
+            if (timeframe === '1w' || timeframe === '1m') {
+              const prev = i > 0 ? new Date(filteredData[i-1].createdAt) : null;
+              const dayChanged = !prev || d.getDate() !== prev.getDate() || d.getMonth() !== prev.getMonth();
+              if (!dayChanged) return '';
+              if (timeframe === '1w') {
+                // Day abbreviations
+                return ['Nd','Pn','Wt','Śr','Cz','Pt','So'][d.getDay()];
+              }
+              // For month, optionally thin labels: show every 2nd day to reduce clutter
+              const dayNum = d.getDate();
+              if (dayNum % 2 === 0) return '';
+              return dayNum.toString();
+            }
+            // Shorter timeframes: show time every hour boundary or first point
+            if (d.getMinutes() === 0 || i === 0) {
+              return `${d.getHours().toString().padStart(2,'0')}:00`;
+            }
+            return '';
+          }
+        },
+        grid: { color: 'rgba(128,128,128,0.15)' }
+      },
       y: { type: 'linear', display: true, position: 'left', ticks: { color: themeStyles.chart.axisColor }, grid: { color: 'rgba(128,128,128,0.15)' } },
       y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { color: themeStyles.chart.axisColor } },
     },
-    plugins: { legend: { labels: { color: themeStyles.chart.axisColor } }, tooltip: { callbacks: { label: t => `${t.dataset.label}: ${t.raw}` } } },
+    plugins: {
+      legend: { labels: { color: themeStyles.chart.axisColor } },
+      tooltip: {
+        callbacks: {
+          title: items => {
+            if (!items.length) return '';
+            const i = items[0].dataIndex;
+            const d = new Date(filteredData[i].createdAt);
+            return d.toLocaleString();
+          },
+          label: t => `${t.dataset.label}: ${t.raw}`
+        }
+      }
+    },
     interaction: { intersect: false, mode: 'index' },
-    animation: { duration: 500 },
-  };
+    animation: { duration: 450 },
+  }), [filteredData, timeframe, themeStyles]);
 
   // Automatic system theme; no manual toggle.
 
@@ -194,7 +239,7 @@ export default function HomePage() {
     { id: '6h', label: '6h' },
     { id: '24h', label: '24h' },
     { id: '1w', label: '1w' },
-    { id: '1m', label: '1 mth' },
+    { id: '1m', label: '1mth' },
   ];
   const humidity = latestData?.humidity ?? 0;
 
