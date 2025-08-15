@@ -2,3 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom scrollbar for modern look */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#6366f1,#a855f7); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg,#4f46e5,#9333ea); }
+
+html, body { height: 100%; }
+body { -webkit-font-smoothing: antialiased; }
+
+.loader { width:56px; height:56px; border-radius:50%; position:relative; background:conic-gradient(#0000 10%,#6366f1) content-box; -webkit-mask:radial-gradient(farthest-side,#0000 calc(100% - 9px),#000 0); animation:spinner 1s infinite linear; }
+@keyframes spinner { to { transform: rotate(1turn); } }
+
+.glass { @apply bg-white/10 dark:bg-black/30 backdrop-blur-md border border-white/10 rounded-2xl shadow-lg; }
+
+.fade-in { animation: fadeIn .6s ease; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(8px);} to {opacity:1; transform:translateY(0);} }
+
+.safe-pb { padding-bottom: env(safe-area-inset-bottom); }
+

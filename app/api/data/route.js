@@ -47,7 +47,9 @@ export async function GET() {
   await connectToDatabase();
 
   try {
-    const past48Results = await DataModel.find().sort({ createdAt: -1 }).limit(48);
+  // With 30 minute measurements: 48 samples ~= 1 day. For ~30 days we need up to 1440 samples.
+  // Fetch a bit more headroom (1500) to cover one month range.
+  const past48Results = await DataModel.find().sort({ createdAt: -1 }).limit(1500);
     const latestData = past48Results[0];
 
     return NextResponse.json({ latestData, past48Results });
