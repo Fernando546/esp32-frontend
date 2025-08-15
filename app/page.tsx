@@ -193,11 +193,9 @@ export default function HomePage() {
   const timeframeButtons: { id: typeof timeframe; label: string }[] = [
     { id: '6h', label: '6h' },
     { id: '24h', label: '24h' },
-    { id: '1w', label: '1 tydzień' },
-    { id: '1m', label: '1 miesiąc' },
+    { id: '1w', label: '1w' },
+    { id: '1m', label: '1 mth' },
   ];
-
-  // Rain removed – humidity only displayed in stats
   const humidity = latestData?.humidity ?? 0;
 
   if (error) return <div className="p-6 text-center text-red-500">{error}</div>;
@@ -233,7 +231,7 @@ export default function HomePage() {
               <h2 className="text-lg sm:text-xl font-semibold tracking-tight">Historia pomiarów</h2>
               <p className="text-xs opacity-70">Interaktywne wykresy temperatury i wilgotności</p>
             </div>
-            <div className={`flex items-center gap-2 rounded-full p-1 border ${themeStyles.buttonFrame}`}>
+            <div className={`flex items-center gap-2 rounded-full p-1 border ${themeStyles.buttonFrame} self-center sm:self-auto mx-auto sm:mx-0 flex-wrap justify-center`}> 
               {timeframeButtons.map(btn => (
                 <button
                   key={btn.id}
